@@ -35,10 +35,7 @@ type Pattern<Type> = {
     | Record<keyof Type[Property], CallablePlaceholder | Placeholder>
     | CallablePlaceholder
     | Placeholder
-    | (
-        | Placeholder
-        | keyof Property // this is for Array. Indexes are considered as object keys
-      )[];
+    | (Placeholder | keyof Property)[];
 };
 
 export const pattern = <S>(value: S) => {
@@ -81,6 +78,8 @@ export const pattern = <S>(value: S) => {
       }
 
       if (_predicate(pattern, value)) {
+        // todo: this function went too far it's hard to follow
+        // I will reimplement it
         const _replace = (pattern: Pattern<S>): any => {
           let patternWithReplacedSymbols = pattern;
           if (typeof pattern === "object") {
@@ -88,7 +87,6 @@ export const pattern = <S>(value: S) => {
               if (Object.prototype.hasOwnProperty.call(pattern, key)) {
                 const patternValue = pattern[key];
                 switch (typeof patternValue) {
-                  case typeof placeholder:
                   case "function":
                     patternWithReplacedSymbols[key] = value[key];
                     break;
@@ -100,7 +98,6 @@ export const pattern = <S>(value: S) => {
                           value[key]
                         ))
                     ) {
-                      // todo: you know what
                       patternWithReplacedSymbols[key] = value[key];
                     } else {
                       patternWithReplacedSymbols[key] = _replace(value[key]);
