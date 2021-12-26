@@ -71,11 +71,6 @@ console.log('result', result2);
 console.timeEnd('pattern-select');
 ```
 
-
-#### Disclaimer
-I'm learning Typescript and this is how I try to improve my understanding of Generic types. 
-
-
 ### Blog post
 <https://fatih-erikli.com/pattern-matching-in-typescript.html>
 
