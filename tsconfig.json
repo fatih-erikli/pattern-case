@@ -2,7 +2,8 @@
   "compilerOptions": {
     "allowJs": false,
     "outDir": "./dist",
-    "module": "commonjs",
+    "module": "umd",
+    "declaration": true,
     "target": "esnext",
     "lib": ["esnext", "dom"],
     "alwaysStrict": true,
@@ -16,6 +17,6 @@
       "@types/jest"
     ]
   },
-  "include": ["pattern-select"],
+  "include": ["pattern-select.ts"],
   "exclude": ["node_modules", "dist", "test"]
 }

@@ -1,5 +1,4 @@
 export const placeholder = Symbol("placeholder");
-
 class NoMatchingPattern extends Error {
   pattern: any;
   constructor(pattern: any) {
@@ -41,10 +40,7 @@ export const pattern = <S>(value: S) => {
   };
 
   const continueNext = {
-    case(
-      pattern: Pattern<S>,
-      output?: (matched: S) => void
-    ) {
+    case(pattern: Pattern<S>, output?: (matched: S) => void) {
       if (fallThrough && output) {
         matched = output(fallThrough);
       }
@@ -59,7 +55,10 @@ export const pattern = <S>(value: S) => {
           for (const key in pattern) {
             if (Object.prototype.hasOwnProperty.call(pattern, key)) {
               const patternValue = pattern[key];
-              if (patternValue === placeholder || typeof patternValue === 'function') {
+              if (
+                patternValue === placeholder ||
+                typeof patternValue === "function"
+              ) {
                 patternWithReplacedSymbols[key] = value[key];
               }
             }
