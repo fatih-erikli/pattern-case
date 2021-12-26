@@ -1,4 +1,3 @@
-export const placeholder = Symbol("placeholder");
 class NoMatchingPattern extends Error {
   pattern: any;
   constructor(pattern: any) {
@@ -6,28 +5,60 @@ class NoMatchingPattern extends Error {
     this.pattern = pattern;
   }
 }
-type predicate = (value: any) => boolean;
+
+export const PlaceholderSymbol = Symbol("Placeholder");
+export const CallablePlaceholderSymbol = Symbol("CallablePlaceholder");
+
+type CallablePlaceholder = {
+  [CallablePlaceholderSymbol]: true;
+  predicate: (value: any) => boolean;
+};
+
+type Placeholder = {
+  [PlaceholderSymbol]: true;
+};
+
+export const placeholder: Placeholder = {
+  [PlaceholderSymbol]: true,
+};
+
+export const predicate = (_predicate: any): CallablePlaceholder => {
+  return {
+    [CallablePlaceholderSymbol]: true,
+    predicate: (value: any) => _predicate(value),
+  };
+};
 
 type Pattern<Type> = {
-  [Property in keyof Type]?: predicate | symbol | Type[Property];
+  [Property in keyof Type]?:
+    | Type[Property]
+    | Record<keyof Type[Property], CallablePlaceholder | Placeholder>
+    | CallablePlaceholder
+    | Placeholder
+    | (
+        | Placeholder
+        | keyof Property // this is for Array. Indexes are considered as object keys
+      )[];
 };
 
 export const pattern = <S>(value: S) => {
   let matched: any;
   let fallThrough: any;
 
-  let predicate: any;
+  let _predicate: any;
   let isObject = typeof value === "object";
 
   if (isObject) {
-    predicate = (a: any, b: any) =>
+    _predicate = (a: any, b: any) =>
       Object.keys(a).every((key) =>
-        typeof a[key] === "function"
-          ? a[key](b[key])
-          : a[key] === placeholder || a[key] === b[key]
+        typeof a[key] === "object"
+          ? a[key][CallablePlaceholderSymbol]
+            ? a[key].predicate(b[key])
+            : _predicate(a[key], b[key])
+          : a[key][PlaceholderSymbol] || a[key] === b[key]
       );
   } else {
-    predicate = (a: any, b: any) => a === b;
+    _predicate = (a: any, b: any) => a === b;
   }
 
   const breakNext = {
@@ -49,23 +80,43 @@ export const pattern = <S>(value: S) => {
         return breakNext;
       }
 
-      if (predicate(pattern, value)) {
-        let patternWithReplacedSymbols = pattern;
-        if (typeof pattern === "object") {
-          for (const key in pattern) {
-            if (Object.prototype.hasOwnProperty.call(pattern, key)) {
-              const patternValue = pattern[key];
-              if (
-                patternValue === placeholder ||
-                typeof patternValue === "function"
-              ) {
-                patternWithReplacedSymbols[key] = value[key];
+      if (_predicate(pattern, value)) {
+        const _replace = (pattern: Pattern<S>): any => {
+          let patternWithReplacedSymbols = pattern;
+          if (typeof pattern === "object") {
+            for (const key in pattern) {
+              if (Object.prototype.hasOwnProperty.call(pattern, key)) {
+                const patternValue = pattern[key];
+                switch (typeof patternValue) {
+                  case typeof placeholder:
+                  case "function":
+                    patternWithReplacedSymbols[key] = value[key];
+                    break;
+                  case "object":
+                    if (
+                      PlaceholderSymbol in pattern[key] ||
+                      (CallablePlaceholderSymbol in pattern[key] &&
+                        (pattern[key] as CallablePlaceholder).predicate(
+                          value[key]
+                        ))
+                    ) {
+                      // todo: you know what
+                      patternWithReplacedSymbols[key] = value[key];
+                    } else {
+                      patternWithReplacedSymbols[key] = _replace(value[key]);
+                    }
+                    break;
+                }
               }
             }
+          } else {
+            patternWithReplacedSymbols = pattern;
           }
-        } else {
-          patternWithReplacedSymbols = pattern;
-        }
+          return patternWithReplacedSymbols as Pattern<S>;
+        };
+
+        let patternWithReplacedSymbols = _replace(pattern);
+
         if (!output) {
           fallThrough = patternWithReplacedSymbols;
           return continueNext;
