@@ -42,51 +42,6 @@ pattern<Action>(uiAction)
   .match() // 1
 ```
 
-### Custom predicates
-
-The pattern can be build with functions return boolean values.
-
-```typescript
-type Action = {
-  target: string;
-  event: "mousedown" | "mouseup" | "test" | "mousemove" | "touchmove";
-  timestamp: number;
-};
-const uiAction = { target: "button-1", "event": "mousedown", "timestamp": 1 } as Action;
-
-console.time('pattern-select')
-for (let index = 0; index < 100000; index++) {
-  pattern<Action>(uiAction)
-    .case({ target: "button-2", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-    .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-    .case({ target: "button-1", "event": "test", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-    .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-    .match()
-}
-console.timeEnd('pattern-select'); // ~40ms
-
-console.time('ts-pattern')
-for (let index = 0; index < 100000; index++) {
-  const result = match<Action>(uiAction)
-    .with({ target: "button-2", "event": "mousedown", timestamp: __ }, ({ timestamp }) => timestamp)
-    .with({ target: "button-1", "event": "mousedown", timestamp: __ }, ({ timestamp }) => timestamp)
-    .with({ target: "button-1", "event": "test", timestamp: __ }, ({ timestamp }) => timestamp)
-    .with({ target: "button-1", "event": "mousedown", timestamp: __ }, ({ timestamp }) => timestamp)
-    .run();
-}
-console.timeEnd('ts-pattern'); // ~120ms
-```
-
-### Signature
-
-Expected type of case statements are partial of the object given with pattern.
-
-```typescript
-type Pattern<T> = {
-  [P in keyof T]?: typeof Symbol('placeholder') | T[P];
-};
-```
-
 ### Comparison with ts-pattern
 ```typescript
 console.time('ts-pattern')
