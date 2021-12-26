@@ -1,3 +1,5 @@
+[![Node.js CI](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml/badge.svg)](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml)
+
 ### Pattern Matching in Typescript
 
 Fast and efficient pattern matching in Typescript.
@@ -13,10 +15,10 @@ type Action = {
 const uiAction = {target: "button-1", "event": "mousedown", "timestamp": 1} as Action;
 
 pattern<Action>(uiAction)
-  .case({target: "button-2", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-  .case({target: "button-1", "event": "test", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
+  .case({target: "button-2", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
+  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
+  .case({target: "button-1", "event": "test", timestamp: placeholder}, ({ timestamp }) => timestamp)
+  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
   .match() // 1
 ```
 
@@ -36,7 +38,7 @@ pattern<Action>(uiAction)
   .case({target: "button-2", "event": "mousedown", timestamp: placeholder})
   .case({target: "button-1", "event": "mousedown", timestamp: placeholder})
   .case({target: "button-1", "event": "test", timestamp: placeholder})
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
+  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
   .match() // 1
 ```
 
@@ -64,11 +66,11 @@ pattern<Action>(uiAction)
 
 ### Signature
 
-Expected type of case statements are partial of the object given with pattern or Symbol('placeholder').
+Expected type of case statements are partial of the object given with pattern.
 
 ```typescript
 type Pattern<T> = {
-  [P in keyof T]?: symbol | T[P];
+  [P in keyof T]?: typeof Symbol('placeholder') | T[P];
 };
 ```
 
@@ -94,6 +96,10 @@ const result2 = pattern<Action>(uiAction)
 console.log('result', result2);
 console.timeEnd('pattern-select'); // 1ms
 ```
+
+### Blog post
+
+<https://fatih-erikli.com/pattern-matching-in-typescript.html>
 
 Happy hacking!
 

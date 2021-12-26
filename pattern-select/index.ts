@@ -2,7 +2,7 @@ export const placeholder = Symbol("placeholder");
 
 type Pattern<T> = {
   [P in keyof T]?: ((value: any) => boolean) | symbol | T[P];
-};
+}
 
 export type MatchedWithPlaceholder<T, U> = T extends U ? T : Pattern<U>;
 
