@@ -75,5 +75,9 @@ console.log('result', result2);
 console.timeEnd('pattern-select'); // 1ms
 ```
 
+### Blog post
+
+<https://fatih-erikli.com/pattern-matching-in-typescript.html>
+
 Happy hacking!
 
