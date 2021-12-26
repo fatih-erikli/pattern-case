@@ -7,14 +7,13 @@ class NoMatchingPattern extends Error {
     this.pattern = pattern;
   }
 }
+type predicate = (value: any) => boolean;
 
-type Pattern<T> = {
-  [P in keyof T]?: ((value: any) => boolean) | symbol | T[P];
-}
+type Pattern<Type> = {
+  [Property in keyof Type]?: predicate | symbol | Type[Property];
+};
 
-export type MatchedWithPlaceholder<T, U> = T extends U ? T : Pattern<U>;
-
-export const pattern = <S>(value: any) => {
+export const pattern = <S>(value: S) => {
   let matched: any;
   let fallThrough: any;
 
@@ -33,17 +32,17 @@ export const pattern = <S>(value: any) => {
   }
 
   const breakNext = {
-    match(): Partial<S> {
+    match() {
       return matched;
     },
-    case() {
+    case(_: Pattern<S>, __?: (matched: S) => void) {
       return breakNext;
     },
   };
 
   const continueNext = {
-    case<T>(
-      pattern: MatchedWithPlaceholder<T, S>,
+    case(
+      pattern: Pattern<S>,
       output?: (matched: S) => void
     ) {
       if (fallThrough && output) {
