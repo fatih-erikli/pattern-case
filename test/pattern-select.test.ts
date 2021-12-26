@@ -18,6 +18,31 @@ describe('pattern matching', () => {
     expect(result).toBe(1);
   })
 
+  test('pattern matching with custom predicate', () => {
+    type Action = {
+      target: string;
+      event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
+      timestamp: number;
+    };
+    const uiAction = {target: "button-1", "event": "mousedown", "timestamp": 1} as Action;
+    
+
+    const result2 = pattern<Action>(uiAction)
+      .case({target: "button-1", "event": "mousedown", timestamp: ((val: any) => true)}, ({ timestamp }: any) => timestamp)
+      .match();
+    expect(result2).toBe(1);
+
+    const result3 = pattern<Action>(uiAction)
+      .case({target: "button-1", "event": "mousedown", timestamp: ((val: any) => false)}, ({ timestamp }: any) => timestamp)
+      .match();
+    expect(result3).toBe(undefined);
+
+    const result4 = pattern<Action>(uiAction)
+      .case({target: "button-1", "event": "mousedown", timestamp: ((val: any) => val === 1)}, ({ timestamp }: any) => timestamp)
+      .match();
+    expect(result4).toBe(1);
+  })
+
   test('pattern matching with fall-through', () => {
     type Action = {
       target: string;

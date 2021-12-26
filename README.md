@@ -40,6 +40,28 @@ pattern<Action>(uiAction)
   .match() // 1
 ```
 
+### Custom predicates
+
+The pattern can be build with functions return boolean values.
+
+```typescript
+import { pattern, predicate } from "pattern-select";
+
+type Action = {
+  target: string;
+  event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
+  timestamp: number;
+};
+const uiAction = {target: "button-1", "event": "mousedown", "timestamp": 1} as Action;
+
+pattern<Action>(uiAction)
+  .case({target: "button-2", "event": ((value) => value === "mousedown"), timestamp: placeholder})
+  .case({target: "button-1", "event": "mousedown", timestamp: placeholder})
+  .case({target: "button-1", "event": "test", timestamp: placeholder})
+  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
+  .match() // 1
+```
+
 ### Signature
 
 Expected type of case statements are partial of the object given with pattern or Symbol('placeholder').

@@ -1,8 +1,7 @@
+export const placeholder = Symbol("placeholder");
 
-export const placeholder = Symbol('placeholder');
-
-export type Pattern<T> = {
-  [P in keyof T]?: symbol | T[P];
+type Pattern<T> = {
+  [P in keyof T]?: ((value: any) => boolean) | symbol | T[P];
 };
 
 export type MatchedWithPlaceholder<T, U> = T extends U ? T : Pattern<U>;
@@ -15,9 +14,14 @@ export const pattern = <S>(value: any) => {
   let isObject = typeof value === "object";
 
   if (isObject) {
-    predicate = (a:any, b:any) => Object.keys(a).every((key) => a[key] === placeholder || a[key] === b[key]);
+    predicate = (a: any, b: any) =>
+      Object.keys(a).every((key) =>
+        typeof a[key] === "function"
+          ? a[key](b[key])
+          : a[key] === placeholder || a[key] === b[key]
+      );
   } else {
-    predicate = (a:any, b:any) => a === b;
+    predicate = (a: any, b: any) => a === b;
   }
 
   const breakNext = {
@@ -26,11 +30,14 @@ export const pattern = <S>(value: any) => {
     },
     case() {
       return breakNext;
-    }
+    },
   };
 
   const continueNext = {
-    case<T>(pattern: MatchedWithPlaceholder<T, S>, output?: (matched: Partial<S>) => void) {
+    case<T>(
+      pattern: MatchedWithPlaceholder<T, S>,
+      output?: (matched: Partial<S>) => void
+    ) {
       if (fallThrough && output) {
         matched = output(fallThrough);
       }
@@ -45,8 +52,8 @@ export const pattern = <S>(value: any) => {
           for (const key in pattern) {
             if (Object.prototype.hasOwnProperty.call(pattern, key)) {
               const patternValue = pattern[key];
-              if (patternValue === placeholder) {
-                patternWithReplacedSymbols[key] = value[key]
+              if (patternValue === placeholder || typeof patternValue === 'function') {
+                patternWithReplacedSymbols[key] = value[key];
               }
             }
           }
@@ -65,7 +72,7 @@ export const pattern = <S>(value: any) => {
     },
     match() {
       console.error("No matching pattern for", value);
-    }
+    },
   };
   return continueNext;
 };
