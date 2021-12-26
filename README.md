@@ -1,5 +1,8 @@
 [![Node.js CI](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml/badge.svg)](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml)
 
+#### Disclaimer
+I'm learning Typescript and this is how I try to improve my understanding of Generic types. 
+
 ### Pattern Matching in Typescript
 
 Fast and efficient pattern matching in Typescript.
