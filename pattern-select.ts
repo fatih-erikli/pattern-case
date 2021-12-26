@@ -7,24 +7,21 @@ class NoMatchingPattern extends Error {
 }
 
 export const PlaceholderSymbol = Symbol("Placeholder");
-export const CallablePlaceholderSymbol = Symbol("CallablePlaceholder");
-
-type CallablePlaceholder = {
-  [CallablePlaceholderSymbol]: true;
-  predicate: (value: any) => boolean;
-};
 
 type Placeholder = {
   [PlaceholderSymbol]: true;
+  predicate: (value: any) => boolean;
 };
+
 
 export const placeholder: Placeholder = {
-  [PlaceholderSymbol]: true,
+    [PlaceholderSymbol]: true,
+    predicate: () => true,
 };
 
-export const predicate = (_predicate: any): CallablePlaceholder => {
+export const predicate = (_predicate: any): Placeholder => {
   return {
-    [CallablePlaceholderSymbol]: true,
+    [PlaceholderSymbol]: true,
     predicate: (value: any) => _predicate(value),
   };
 };
@@ -32,15 +29,10 @@ export const predicate = (_predicate: any): CallablePlaceholder => {
 type Pattern<Type> = {
   [Property in keyof Type]?:
     | Type[Property]
-    | Record<keyof Type[Property], CallablePlaceholder | Placeholder>
-    | CallablePlaceholder
+    | Record<keyof Type[Property], Placeholder>
     | Placeholder
     | (Placeholder | keyof Property)[];
 };
-
-const _ensureArrayLength = (a: any[], b: any[]) => {
-  return !Array.isArray(a) || a.length === b.length;
-}
 
 export const pattern = <S>(value: S) => {
   let matched: any;
@@ -51,11 +43,11 @@ export const pattern = <S>(value: S) => {
     _predicate = (a: any, b: any) =>
       Object.keys(a).every((key) =>
         typeof a[key] === "object"
-          ? a[key][CallablePlaceholderSymbol]
+          ? a[key][PlaceholderSymbol]
             ? a[key].predicate(b[key])
-            : _ensureArrayLength(a[key], b[key]) &&
+            : Object.keys(a[key]).length === Object.keys(b[key]).length &&
               _predicate(a[key], b[key])
-          : a[key][PlaceholderSymbol] || a[key] === b[key]
+          : a[key] === PlaceholderSymbol || a[key] === b[key]
       );
   } else {
     _predicate = (a: any, b: any) => a === b;
@@ -93,9 +85,8 @@ export const pattern = <S>(value: S) => {
                   continue;
                 }
                 if (
-                  PlaceholderSymbol in pattern[key] ||
-                  (CallablePlaceholderSymbol in pattern[key] &&
-                    (pattern[key] as CallablePlaceholder).predicate(value[key]))
+                  (PlaceholderSymbol in pattern[key] &&
+                    (pattern[key] as Placeholder).predicate(value[key]))
                 ) {
                   patternWithReplacedSymbols[key] = value[key];
                 } else {
