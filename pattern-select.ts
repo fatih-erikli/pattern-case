@@ -38,18 +38,23 @@ type Pattern<Type> = {
     | (Placeholder | keyof Property)[];
 };
 
+const _ensureArrayLength = (a: any[], b: any[]) => {
+  return !Array.isArray(a) || a.length === b.length;
+}
+
 export const pattern = <S>(value: S) => {
   let matched: any;
   let fallThrough: any;
 
-  let _predicate:  (a: any, b: any) => boolean;
+  let _predicate: (a: any, b: any) => boolean;
   if (typeof value === "object") {
     _predicate = (a: any, b: any) =>
       Object.keys(a).every((key) =>
         typeof a[key] === "object"
           ? a[key][CallablePlaceholderSymbol]
             ? a[key].predicate(b[key])
-            : _predicate(a[key], b[key])
+            : _ensureArrayLength(a[key], b[key]) &&
+              _predicate(a[key], b[key])
           : a[key][PlaceholderSymbol] || a[key] === b[key]
       );
   } else {
