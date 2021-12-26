@@ -1,8 +1,5 @@
 [![Node.js CI](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml/badge.svg)](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml)
 
-#### Disclaimer
-I'm learning Typescript and this is how I try to improve my understanding of Generic types. 
-
 ### Pattern Matching in Typescript
 
 Fast and efficient pattern matching in Typescript.
@@ -50,21 +47,34 @@ pattern<Action>(uiAction)
 The pattern can be build with functions return boolean values.
 
 ```typescript
-import { pattern, predicate } from "pattern-select";
-
 type Action = {
   target: string;
-  event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
+  event: "mousedown" | "mouseup" | "test" | "mousemove" | "touchmove";
   timestamp: number;
 };
-const uiAction = {target: "button-1", "event": "mousedown", "timestamp": 1} as Action;
+const uiAction = { target: "button-1", "event": "mousedown", "timestamp": 1 } as Action;
 
-pattern<Action>(uiAction)
-  .case({target: "button-2", "event": ((value) => value === "mousedown"), timestamp: placeholder})
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder})
-  .case({target: "button-1", "event": "test", timestamp: placeholder})
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-  .match() // 1
+console.time('pattern-select')
+for (let index = 0; index < 100000; index++) {
+  pattern<Action>(uiAction)
+    .case({ target: "button-2", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
+    .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
+    .case({ target: "button-1", "event": "test", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
+    .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
+    .match()
+}
+console.timeEnd('pattern-select'); // ~40ms
+
+console.time('ts-pattern')
+for (let index = 0; index < 100000; index++) {
+  const result = match<Action>(uiAction)
+    .with({ target: "button-2", "event": "mousedown", timestamp: __ }, ({ timestamp }) => timestamp)
+    .with({ target: "button-1", "event": "mousedown", timestamp: __ }, ({ timestamp }) => timestamp)
+    .with({ target: "button-1", "event": "test", timestamp: __ }, ({ timestamp }) => timestamp)
+    .with({ target: "button-1", "event": "mousedown", timestamp: __ }, ({ timestamp }) => timestamp)
+    .run();
+}
+console.timeEnd('ts-pattern'); // ~120ms
 ```
 
 ### Signature
@@ -87,7 +97,7 @@ const result = match<Action>(uiAction)
 .with({target: "button-1", "event": "mousedown", timestamp: __}, ({ timestamp }) => timestamp)
 .run();
 console.log('result', result);
-console.timeEnd('ts-pattern'); // 6ms
+console.timeEnd('ts-pattern');
 
 console.time('pattern-select')
 const result2 = pattern<Action>(uiAction)
@@ -97,12 +107,15 @@ const result2 = pattern<Action>(uiAction)
 .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
 .match()
 console.log('result', result2);
-console.timeEnd('pattern-select'); // 1ms
+console.timeEnd('pattern-select');
 ```
 
-### Blog post
 
+#### Disclaimer
+I'm learning Typescript and this is how I try to improve my understanding of Generic types. 
+
+
+### Blog post
 <https://fatih-erikli.com/pattern-matching-in-typescript.html>
 
 Happy hacking!
-
