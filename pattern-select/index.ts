@@ -1,4 +1,3 @@
-
 export const placeholder = Symbol('placeholder');
 
 export type Pattern<T> = {
