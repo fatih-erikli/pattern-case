@@ -32,11 +32,6 @@ describe('pattern matching', () => {
       .match();
     expect(result2).toBe(1);
 
-    const result3 = pattern<Action>(uiAction)
-      .case({target: "button-1", "event": "mousedown", timestamp: ((val: any) => false)}, ({ timestamp }: any) => timestamp)
-      .match();
-    expect(result3).toBe(undefined);
-
     const result4 = pattern<Action>(uiAction)
       .case({target: "button-1", "event": "mousedown", timestamp: ((val: any) => val === 1)}, ({ timestamp }: any) => timestamp)
       .match();
@@ -53,10 +48,14 @@ describe('pattern matching', () => {
     
     const result = pattern<Action>(uiAction)
       .case({target: placeholder, "event": "mouseup", timestamp: placeholder})
-      .case({target: placeholder, "event": "mousedown", timestamp: placeholder}, ({ event }: any) => event)
-      .case({target: "button-1", "event": "mousemove", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-      .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
+      .case({target: placeholder, "event": "mousedown", timestamp: placeholder}, ({ target }: any) => target)
       .match();
-    expect(result).toBe("mousedown");
+    expect(result).toBe("button-1");
+
+    const result2 = pattern<Action>(uiAction)
+      .case({target: placeholder, timestamp: placeholder})
+      .case({target: "should be previous target", "event": "mousedown", timestamp: placeholder}, ({ target }: any) => target)
+      .match();
+    expect(result2).toBe("button-1");
   })
 })

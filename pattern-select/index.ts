@@ -1,5 +1,13 @@
 export const placeholder = Symbol("placeholder");
 
+class NoMatchingPattern extends Error {
+  pattern: any;
+  constructor(pattern: any) {
+    super(`No matching pattern ${JSON.stringify(pattern)}`);
+    this.pattern = pattern;
+  }
+}
+
 type Pattern<T> = {
   [P in keyof T]?: ((value: any) => boolean) | symbol | T[P];
 }
@@ -38,6 +46,7 @@ export const pattern = <S>(value: any) => {
       pattern: MatchedWithPlaceholder<T, S>,
       output?: (matched: Partial<S>) => void
     ) {
+      
       if (fallThrough && output) {
         matched = output(fallThrough);
       }
@@ -61,7 +70,7 @@ export const pattern = <S>(value: any) => {
           patternWithReplacedSymbols = pattern;
         }
         if (!output) {
-          fallThrough = pattern;
+          fallThrough = patternWithReplacedSymbols;
           return continueNext;
         } else {
           matched = output(patternWithReplacedSymbols as Partial<S>);
@@ -71,7 +80,7 @@ export const pattern = <S>(value: any) => {
       return continueNext;
     },
     match() {
-      console.error("No matching pattern for", value);
+      throw new NoMatchingPattern(value);
     },
   };
   return continueNext;
