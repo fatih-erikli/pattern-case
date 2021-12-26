@@ -1,3 +1,5 @@
+[![Node.js CI](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml/badge.svg)](https://github.com/fatih-erikli/pattern-select/actions/workflows/node.js.yml)
+
 ### Pattern Matching in Typescript
 
 Fast and efficient pattern matching in Typescript.
