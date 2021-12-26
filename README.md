@@ -56,10 +56,10 @@ console.timeEnd('ts-pattern');
 
 console.time('pattern-select')
 const result2 = pattern<Action>(uiAction)
-.case({target: "button-2", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-.case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-.case({target: "button-1", "event": "test", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
-.case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }: any) => timestamp)
+.case({target: "button-2", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
+.case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
+.case({target: "button-1", "event": "test", timestamp: placeholder}, ({ timestamp }) => timestamp)
+.case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
 .match()
 console.log('result', result2);
 console.timeEnd('pattern-select');
