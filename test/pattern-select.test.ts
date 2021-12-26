@@ -57,5 +57,32 @@ describe('pattern matching', () => {
       .case({target: "should be previous target", "event": "mousedown", timestamp: placeholder}, ({ target }: any) => target)
       .match();
     expect(result2).toBe("button-1");
+
+    type Action2 = Action & {
+      partialKey: number;
+    };
+    const result3 = pattern<Action2>({
+      ...uiAction,
+      partialKey: 1
+    })
+      .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ partialKey }: any) => partialKey)
+      .match();
+    expect(result3).toBe(undefined);
+  })
+
+  test('Matching result should be Partial of given object', () => {
+    type Action = {
+      target: string;
+      event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
+      timestamp: number;
+      partialKey: 1
+    };
+    const uiAction: Action = {partialKey: 1, target: "button-1", "event": "mousedown", "timestamp": 1};
+    
+   
+    const result3 = pattern<Action>(uiAction)
+      .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ partialKey }: any) => partialKey)
+      .match();
+    expect(result3).toBe(undefined);
   })
 })

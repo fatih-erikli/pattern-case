@@ -33,7 +33,7 @@ export const pattern = <S>(value: any) => {
   }
 
   const breakNext = {
-    match(): S {
+    match(): Partial<S> {
       return matched;
     },
     case() {
@@ -46,7 +46,6 @@ export const pattern = <S>(value: any) => {
       pattern: MatchedWithPlaceholder<T, S>,
       output?: (matched: S) => void
     ) {
-      
       if (fallThrough && output) {
         matched = output(fallThrough);
       }
