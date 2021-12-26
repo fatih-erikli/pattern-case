@@ -42,10 +42,8 @@ export const pattern = <S>(value: S) => {
   let matched: any;
   let fallThrough: any;
 
-  let _predicate: any;
-  let isObject = typeof value === "object";
-
-  if (isObject) {
+  let _predicate:  (a: any, b: any) => boolean;
+  if (typeof value === "object") {
     _predicate = (a: any, b: any) =>
       Object.keys(a).every((key) =>
         typeof a[key] === "object"
@@ -103,7 +101,7 @@ export const pattern = <S>(value: S) => {
           } else {
             patternWithReplacedSymbols = pattern;
           }
-          return patternWithReplacedSymbols as Pattern<S>;
+          return patternWithReplacedSymbols;
         };
 
         let patternWithReplacedSymbols = _replace(pattern);
@@ -112,7 +110,7 @@ export const pattern = <S>(value: S) => {
           fallThrough = patternWithReplacedSymbols;
           return continueNext;
         } else {
-          matched = output(patternWithReplacedSymbols as S);
+          matched = output(patternWithReplacedSymbols);
           return breakNext;
         }
       }
