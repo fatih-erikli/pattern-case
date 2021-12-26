@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "outDir": "./dist",
+    "module": "commonjs",
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
+    "alwaysStrict": true,
+    "strict": true,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "types": [
+      "@types/jest"
+    ]
+  },
+  "include": ["pattern-select"],
+  "exclude": ["node_modules", "dist", "test"]
+}
