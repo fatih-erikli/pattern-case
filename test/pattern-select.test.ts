@@ -21,7 +21,7 @@ describe('pattern matching', () => {
     const uiAction = { number: 1, list: [1,2] } as Action;
 
     const result = pattern<Action>(uiAction)
-      .case({number: 1, list: [placeholder, 2]}, () => 1)
+      .case({number: 1, list: [placeholder, 2]}, ({ number }) => 1)
       .match();
     expect(result).toBe(1);
   });

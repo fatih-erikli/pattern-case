@@ -86,23 +86,17 @@ export const pattern = <S>(value: S) => {
             for (const key in pattern) {
               if (Object.prototype.hasOwnProperty.call(pattern, key)) {
                 const patternValue = pattern[key];
-                switch (typeof patternValue) {
-                  case "function":
-                    patternWithReplacedSymbols[key] = value[key];
-                    break;
-                  case "object":
-                    if (
-                      PlaceholderSymbol in pattern[key] ||
-                      (CallablePlaceholderSymbol in pattern[key] &&
-                        (pattern[key] as CallablePlaceholder).predicate(
-                          value[key]
-                        ))
-                    ) {
-                      patternWithReplacedSymbols[key] = value[key];
-                    } else {
-                      patternWithReplacedSymbols[key] = _replace(value[key]);
-                    }
-                    break;
+                if (typeof patternValue !== "object") {
+                  continue;
+                }
+                if (
+                  PlaceholderSymbol in pattern[key] ||
+                  (CallablePlaceholderSymbol in pattern[key] &&
+                    (pattern[key] as CallablePlaceholder).predicate(value[key]))
+                ) {
+                  patternWithReplacedSymbols[key] = value[key];
+                } else {
+                  patternWithReplacedSymbols[key] = _replace(value[key]);
                 }
               }
             }
