@@ -2,9 +2,9 @@
   "compilerOptions": {
     "allowJs": false,
     "outDir": "./dist",
-    "module": "umd",
+    "module": "commonjs",
     "declaration": true,
-    "target": "esnext",
+    "target": "es5",
     "lib": ["esnext", "dom"],
     "alwaysStrict": true,
     "strict": true,

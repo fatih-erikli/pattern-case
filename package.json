@@ -1,9 +1,9 @@
 {
   "name": "pattern-select",
-  "version": "1.1.7",
+  "version": "1.2.3",
   "description": "Simple and efficient pattern matching in Typescript.",
-  "type": "module",
   "main": "dist/pattern-select.js",
+  "types": "dist/pattern-select.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json --verbose",
     "build": "tsc"

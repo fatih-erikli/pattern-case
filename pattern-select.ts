@@ -1,4 +1,4 @@
-class NoMatchingPattern extends Error {
+export class NoMatchingPattern extends Error {
   pattern: any;
   constructor(pattern: any) {
     super(`No matching pattern ${JSON.stringify(pattern)}`);
@@ -8,7 +8,7 @@ class NoMatchingPattern extends Error {
 
 export const PlaceholderSymbol = Symbol("Placeholder");
 
-type Placeholder = {
+export type Placeholder = {
   [PlaceholderSymbol]: true;
   predicate: (value: any) => boolean;
 };
@@ -25,17 +25,18 @@ export const predicate = (_predicate: any): Placeholder => {
   };
 };
 
-type Pattern<Type> = {
+export type Pattern<Type> = {
   [Property in keyof Type]?:
   Type[Property]
   | {[P in keyof Type[Property]]: Placeholder | Pattern<Type>}
   | Placeholder
-  | (Placeholder | keyof Property)[];
+  | any[];
 };
 
 export const pattern = <S>(value: S) => {
   let matched: any;
   let fallThrough: any;
+  let result: any;
 
   const match = (pattern: any, matchWith: any) => {
     let matches: boolean = false;
@@ -51,6 +52,9 @@ export const pattern = <S>(value: S) => {
           if (!Object.prototype.hasOwnProperty.call(pattern, key)) { continue; }
           const element = pattern[key];
           matches = match(element, matchWith[key]);
+          if (!matches) {
+            break;
+          }
         }
         break;
       default:
@@ -64,7 +68,7 @@ export const pattern = <S>(value: S) => {
 
   const breakNext = {
     match() {
-      return matched;
+      return result;
     },
     case() {
       return breakNext;
@@ -76,13 +80,15 @@ export const pattern = <S>(value: S) => {
       matched = match(pattern, value);
 
       if (fallThrough && output) {
-        matched = output(value);
+        result = output(value);
+        matched = true;
         fallThrough = undefined;
       }
 
       if (matched) {
         if (output) {
-          matched = output(value);
+          result = output(value);
+          matched = true;
         } else {
           fallThrough = matched;
         }
@@ -100,3 +106,4 @@ export const pattern = <S>(value: S) => {
   };
   return continueNext;
 };
+
