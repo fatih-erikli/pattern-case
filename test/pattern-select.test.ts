@@ -1,17 +1,39 @@
 import { pattern, placeholder, predicate } from '../pattern-select';
 
 describe('pattern matching', () => {
+  test('pattern matching primitives', () => {
+    type Action = 3 | 4;
+    const uiAction = 4;
+
+    const result = pattern<Action>(uiAction)
+      .case(4, (number) => number)  
+      .case(3, (number) => number)
+      .match();
+    expect(result).toBe(4);
+  });
+  test('pattern matching with objects', () => {
+    type Action = {
+      number: 1,
+      object: 1
+    };
+    const uiAction: Action = { number: 1, object: 1 };
+
+    const result = pattern<Action>(uiAction)
+      .case({ number: 1, object: 1}, ({ number }) => number)
+      .match();
+    expect(result).toBe(1);
+  });
   test('pattern matching with nested objects', () => {
     type Action = {
       number: 1,
-      object: {fruit: "banana"} 
+      object: {nested: "nested"} 
     };
-    const uiAction = { number: 1, object: {fruit: "banana"} } as Action;
+    const uiAction = { number: 1, object: {nested: "nested"} } as Action;
 
     const result = pattern<Action>(uiAction)
-      .case( { number: 1, object: {fruit: placeholder} }, ({ object: {fruit} }) => fruit)
+      .case( { number: placeholder, object: {nested: "nested"} }, ({ object: {nested} }) => nested)
       .match();
-    expect(result).toBe("banana");
+    expect(result).toBe("nested");
   });
   test('pattern matching with nested objects', () => {
     type Action = {
@@ -21,11 +43,11 @@ describe('pattern matching', () => {
     const uiAction = { number: 1, list: [1,2] } as Action;
 
     const result = pattern<Action>(uiAction)
-      .case({number: 1, list: [placeholder, 2]}, ({ number }) => 1)
+      .case({number: 1, list: [placeholder, 2]}, ({ number }) => number)
       .match();
     expect(result).toBe(1);
   });
-  test('pattern matching with objects', () => {
+  test('pattern matching with placeholders', () => {
     type Action = {
       target: "button-1";
       event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
@@ -69,44 +91,10 @@ describe('pattern matching', () => {
       timestamp: number;
     };
     const uiAction = { target: "button-1", "event": "mousedown", "timestamp": 1 } as Action;
-
     const result = pattern<Action>(uiAction)
-      .case({ target: placeholder, "event": "mouseup", timestamp: placeholder })
-      .case({ target: placeholder, "event": "mousedown", timestamp: placeholder }, ({ target }: any) => target)
-      .match();
-    expect(result).toBe("button-1");
-
-    const result2 = pattern<Action>(uiAction)
       .case({ target: placeholder, timestamp: placeholder })
       .case({ target: "should be previous target", "event": "mousedown", timestamp: placeholder }, ({ target }: any) => target)
       .match();
-    expect(result2).toBe("button-1");
-
-    type Action2 = Action & {
-      partialKey: number;
-    };
-    const result3 = pattern<Action2>({
-      ...uiAction,
-      partialKey: 1
-    })
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ partialKey }: any) => partialKey)
-      .match();
-    expect(result3).toBe(undefined);
-  })
-
-  test('Matching result should be Partial of given object', () => {
-    type Action = {
-      target: string;
-      event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
-      timestamp: number;
-      partialKey: 1
-    };
-    const uiAction: Action = { partialKey: 1, target: "button-1", "event": "mousedown", "timestamp": 1 };
-
-
-    const result3 = pattern<Action>(uiAction)
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ partialKey }: any) => partialKey)
-      .match();
-    expect(result3).toBe(undefined);
+    expect(result).toBe("button-1");
   })
 })
