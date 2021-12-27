@@ -17,6 +17,6 @@
       "@types/jest"
     ]
   },
-  "include": ["pattern-select.ts"],
+  "include": ["pattern-case.ts"],
   "exclude": ["node_modules", "dist", "test"]
 }

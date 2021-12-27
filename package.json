@@ -1,19 +1,20 @@
 {
-  "name": "pattern-select",
+  "name": "pattern-case",
   "version": "1.2.7",
   "description": "Simple and efficient pattern matching in Typescript.",
-  "main": "dist/pattern-select.js",
-  "types": "dist/pattern-select.d.ts",
+  "main": "dist/pattern-case.js",
+  "types": "dist/pattern-case.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json --verbose",
     "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "github.com/fatih-erikli/pattern-select"
+    "url": "github.com/fatih-erikli/pattern-case"
   },
   "keywords": [
-    "pattern matching"
+    "pattern matching",
+    "typescript"
   ],
   "author": "Fatih Erikli",
   "license": "MIT",

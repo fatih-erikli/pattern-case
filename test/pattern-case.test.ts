@@ -1,4 +1,4 @@
-import { pattern, placeholder, predicate } from '../pattern-select';
+import { pattern, placeholder, predicate } from '../pattern-case';
 
 describe('pattern matching', () => {
   test(('pattern matching with objects in lists'), () => {
