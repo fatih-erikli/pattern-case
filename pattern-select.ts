@@ -33,12 +33,16 @@ export type Pattern<Type> = {
   | any[];
 };
 
+export type Statement<S> = {
+  case: (pattern: Pattern<S>, output: (match: S) => any) => Statement<S>;
+  match: () => S | never;
+};
+
 export const pattern = <S>(value: S) => {
-  let matched: any;
-  let fallThrough: any;
+  let matched: boolean;
   let result: any;
 
-  const match = (pattern: any, matchWith: any) => {
+  const match = (pattern: any, matchWith: any): boolean => {
     let matches: boolean = false;
     switch (typeof pattern) {
       case "object":
@@ -61,44 +65,31 @@ export const pattern = <S>(value: S) => {
         matches = pattern === matchWith;
         break;
     }
-    if (matches) {
-      return pattern;
-    }
+    return matches
   }
 
   const breakNext = {
     match() {
       return result;
     },
-    case() {
+    case(pattern: Pattern<S>, output: (matched: S) => void): Statement<S> {
       return breakNext;
     },
   };
 
   const continueNext = {
-    case(pattern: Pattern<S>, output?: (matched: S) => void) {
+    case(pattern: Pattern<S>, output: (matched: S) => void): Statement<S> {
       matched = match(pattern, value);
 
-      if (fallThrough && output) {
+      if (matched) {
         result = output(value);
-        matched = true;
-        fallThrough = undefined;
       }
 
       if (matched) {
-        if (output) {
-          result = output(value);
-          matched = true;
-        } else {
-          fallThrough = matched;
-        }
-      }
-
-      if (fallThrough || !matched) {
+        return breakNext;
+      } else {
         return continueNext;
       }
-
-      return breakNext;
     },
     match() {
       throw new NoMatchingPattern(value);

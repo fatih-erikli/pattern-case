@@ -1,6 +1,6 @@
 {
   "name": "pattern-select",
-  "version": "1.2.4",
+  "version": "1.2.7",
   "description": "Simple and efficient pattern matching in Typescript.",
   "main": "dist/pattern-select.js",
   "types": "dist/pattern-select.d.ts",

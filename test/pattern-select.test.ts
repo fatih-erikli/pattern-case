@@ -27,13 +27,13 @@ describe('pattern matching', () => {
     }
 
     const result = pattern(canvasState)
-    .case(({ selection: [Vector.Invisible(), Vector.Invisible()] }), () => {
+    .case(({ selection: [Vector.Invisible(), Vector.Invisible()] }), ({ selection }) => {
       return 1
     })
-    .case(({ selection: [Vector.Invisible(), placeholder] }), () => {
+    .case(({ selection: [Vector.Invisible(), placeholder] }), ({ selection }) => {
       return 2
     })
-    .case(({ selection: predicate(([a, b]: Vector[]) => Vector.compare(a, b)) }), () => {
+    .case(({ selection: predicate(([a, b]: Vector[]) => Vector.compare(a, b)) }), ({ selection }) => {
       return 3
     })
     .case(({ selection: predicate(([a, b]: Vector[]) => !Vector.compare(a, b)) }), () => {
@@ -116,10 +116,10 @@ describe('pattern matching', () => {
     const uiAction = { target: "button-1", "event": "mousedown", "timestamp": 1 } as Action;
 
     const result = pattern<Action>(uiAction)
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-      .case({ target: "button-1", "event": "mousemove", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }: any) => timestamp)
+      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }) => timestamp)
+      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }) => timestamp)
+      .case({ target: "button-1", "event": "mousemove", timestamp: placeholder }, ({ timestamp }) => timestamp)
+      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }) => timestamp)
       .match();
     expect(result).toBe(1);
   })
@@ -142,19 +142,5 @@ describe('pattern matching', () => {
       .case({ target: "button-1", "event": "mousedown", timestamp: predicate(() => true) }, ({ timestamp }: any) => timestamp)
       .match();
     expect(result4).toBe(1);
-  })
-
-  test('pattern matching with fall-through', () => {
-    type Action = {
-      target: string;
-      event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
-      timestamp: number;
-    };
-    const uiAction = { target: "button-1", "event": "mousedown", "timestamp": 1 } as Action;
-    const result = pattern<Action>(uiAction)
-      .case({ target: placeholder, timestamp: placeholder })
-      .case({ target: "should be previous target", "event": "mousedown", timestamp: placeholder }, ({ target }: any) => target)
-      .match();
-    expect(result).toBe("button-1");
   })
 })
