@@ -44,6 +44,36 @@ describe('pattern matching', () => {
     expect(result).toBe(4);
 
   });
+  test('null case', () => {
+    type Action = 3 | 4 | null;
+    const uiAction = 4;
+
+    const result = pattern<Action>(uiAction)
+      .case(null, (number) => number)  
+      .case(4, (number) => number)
+      .match();
+    expect(result).toBe(4);
+  });
+  test('null case', () => {
+    type Action = {selectedPost: 1 | null};
+    const uiAction: Action = { selectedPost: 1 };
+
+    const result = pattern<Action>(uiAction)
+      .case({ selectedPost: null }, (post) => post.selectedPost)  
+      .case({ selectedPost: 1 }, (post) => post.selectedPost)
+      .match();
+    expect(result).toBe(1);
+  });
+  test('undefined case', () => {
+    type Action = {selectedPost: 1 | undefined};
+    const uiAction: Action = { selectedPost: 1 };
+
+    const result = pattern<Action>(uiAction)
+      .case({ selectedPost: undefined }, (post) => post.selectedPost)  
+      .case({ selectedPost: 1 }, (post) => post.selectedPost)
+      .match();
+    expect(result).toBe(1);
+  });
   test('pattern matching primitives', () => {
     type Action = 3 | 4;
     const uiAction = 4;

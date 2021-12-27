@@ -44,25 +44,30 @@ export const pattern = <S>(value: S) => {
 
   const match = (pattern: any, matchWith: any): boolean => {
     let matches: boolean = false;
-    switch (typeof pattern) {
-      case "object":
-        if (PlaceholderSymbol in pattern) {
-          if (pattern.predicate(matchWith)) {
-            matches = true;
-            break;
-          }
-        }
-        for (const key in pattern) {
-          if (!Object.prototype.hasOwnProperty.call(pattern, key)) { continue; }
-          const element = pattern[key];
-          matches = match(element, matchWith[key]);
-          if (!matches) {
-            break;
-          }
-        }
+    switch (pattern) {
+      case undefined:
+      case null:
+        matches = pattern === matchWith;
         break;
       default:
-        matches = pattern === matchWith;
+        if (typeof pattern === "object") {
+          if (PlaceholderSymbol in pattern) {
+            if (pattern.predicate(matchWith)) {
+              matches = true;
+              break;
+            }
+          }
+          for (const key in pattern) {
+            if (!Object.prototype.hasOwnProperty.call(pattern, key)) { continue; }
+            const element = pattern[key];
+            matches = match(element, matchWith[key]);
+            if (!matches) {
+              break;
+            }
+          }
+        } else {
+          matches = pattern === matchWith;
+        }
         break;
     }
     return matches
