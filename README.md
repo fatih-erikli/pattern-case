@@ -4,7 +4,7 @@ This project is heavily experimental and the implementation has missing parts. T
 
 For a better and fully-functioning pattern matching in Typescript, please see `ts-pattern` library.
 
-https://github.com/gvergnaud/ts-pattern
+Edit: I worked on the missing parts and refactored the code, but probably there's still some missing parts. Pull requests for improving it even better and the documentation are welcome!
 
 ### Pattern Matching in Typescript
 
