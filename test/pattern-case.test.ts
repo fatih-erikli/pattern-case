@@ -55,11 +55,11 @@ describe('pattern matching', () => {
     expect(result).toBe(4);
   });
   test('null case', () => {
-    type Action = {selectedPost: 1 | null};
-    const uiAction: Action = { selectedPost: 1 };
+    type Action = {a: 1, selectedPost: 1 | null};
+    const uiAction: Action = { a: 1, selectedPost: null };
 
     const result = pattern<Action>(uiAction)
-      .case({ selectedPost: null }, (post) => post.selectedPost)  
+      .case({ a: 1, selectedPost: null }, (post) => post.selectedPost)  
       .case({ selectedPost: 1 }, (post) => post.selectedPost)
       .match();
     expect(result).toBe(1);

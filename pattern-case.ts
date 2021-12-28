@@ -1,8 +1,8 @@
 export class NoMatchingPattern extends Error {
-  pattern: any;
-  constructor(pattern: any) {
-    super(`No matching pattern ${JSON.stringify(pattern)}`);
-    this.pattern = pattern;
+  value: any;
+  constructor(value: any) {
+    super(`No matching value ${JSON.stringify(value)}`);
+    this.value = value;
   }
 }
 
