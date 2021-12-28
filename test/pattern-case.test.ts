@@ -158,9 +158,6 @@ describe('pattern matching', () => {
 
     const result = pattern<Action>(uiAction)
       .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }) => timestamp)
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }) => timestamp)
-      .case({ target: "button-1", "event": "mousemove", timestamp: placeholder }, ({ timestamp }) => timestamp)
-      .case({ target: "button-1", "event": "mousedown", timestamp: placeholder }, ({ timestamp }) => timestamp)
       .match();
     expect(result).toBe(1);
   })
@@ -175,7 +172,7 @@ describe('pattern matching', () => {
 
 
     const result2 = pattern<Action>(uiAction)
-      .case({ target: "button-1", "event": "mousedown", timestamp: predicate(() => 1) }, ({ timestamp }: any) => timestamp)
+      .case({ target: "button-1", "event": "mousedown", timestamp: predicate((timestamp: number) => timestamp === 1) }, ({ timestamp }: any) => timestamp)
       .match();
     expect(result2).toBe(1);
 
