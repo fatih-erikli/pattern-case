@@ -44,6 +44,17 @@ describe('pattern matching', () => {
     expect(result).toBe(4);
 
   });
+  test('with arrays', () => {
+    const uiAction = [1, 2, {a: 1}];
+
+    const result = pattern(uiAction)
+      .case([2, 2], (numbers) => numbers[0])
+      .case([2, 2], (numbers) => numbers[0])
+      .case([2, 2, {a: 2}], (numbers) => numbers[0])
+      .case([1, 2, {a: 1}], (numbers) => numbers[1])
+      .match();
+    expect(result).toBe(2);
+  });
   test('null case', () => {
     type Action = 3 | 4 | null;
     const uiAction = 4;
@@ -62,7 +73,7 @@ describe('pattern matching', () => {
       .case({ a: 1, selectedPost: null }, (post) => post.selectedPost)  
       .case({ selectedPost: 1 }, (post) => post.selectedPost)
       .match();
-    expect(result).toBe(1);
+    expect(result).toBe(null);
   });
   test('undefined case', () => {
     type Action = {selectedPost: 1 | undefined};
