@@ -48,7 +48,8 @@ test('early exit if the condition has met', () => {
 
 ### Fall-through
 
-The second argument of `case` method is optional. In case if it's not given, the handler of next matched case statement will be evaluated.
+<s>The second argument of `case` method is optional. In case if it's not given, the handler of next matched case statement will be evaluated.</s>
+This feature is removed currently, but it looks like I will revert it back. It's useful.
 
 ```typescript
 type Action = {
