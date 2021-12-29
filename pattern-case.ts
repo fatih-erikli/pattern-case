@@ -1,8 +1,11 @@
 export class NoMatchingPattern extends Error {
-  value: any;
-  constructor(value: any) {
-    super(`No matching pattern for ${JSON.stringify(value)}`);
-    this.value = value;
+  constructor(value: any, patterns: any[]) {
+    console.info('value', value);
+    console.info('patterns have been tried');
+    for (const pattern of patterns) {
+      console.debug(pattern);
+    }
+    super(`No matching pattern`);
   }
 }
 
@@ -38,9 +41,29 @@ export type Statement<S> = {
   match: () => S | never;
 };
 
+export type WrappedTupple<T> =  { [K in keyof T]: T[K] | Placeholder | Pattern<T[K]> }
+// https://github.com/Microsoft/TypeScript/issues/25947
+
+export const tuple = <S extends any[]>(...args: S) => {
+  let patternFunction: any = pattern(args);
+  const statement = {
+    case: (...patternArgs: S | WrappedTupple<S>) =>  {
+      return (callback: ((...args: S) => any)) => {
+        patternFunction = patternFunction.case(patternArgs, () => callback(...args));
+        return statement;
+      }
+    },
+    match: () => {
+      return patternFunction.match();
+    }
+  }
+  return statement;
+};
+
 export const pattern = <S>(value: S) => {
   let matched: boolean;
   let result: any;
+  let triedPatterns: Pattern<S>[] = [];
 
   const match = (pattern: any, matchWith: any): boolean => {
     let matches: boolean = false;
@@ -93,11 +116,12 @@ export const pattern = <S>(value: S) => {
       if (matched) {
         return breakNext;
       } else {
+        triedPatterns.push(pattern);
         return continueNext;
       }
     },
     match() {
-      throw new NoMatchingPattern(value);
+      throw new NoMatchingPattern(value, triedPatterns);
     },
   };
   return continueNext;

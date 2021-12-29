@@ -1,4 +1,4 @@
-import { pattern, placeholder, predicate } from '../pattern-case';
+import { pattern, placeholder, predicate, tuple } from '../pattern-case';
 
 describe('pattern matching', () => {
   test(('pattern matching with objects in lists'), () => {
@@ -43,6 +43,35 @@ describe('pattern matching', () => {
 
     expect(result).toBe(4);
 
+  });
+  test('with tuples', () => {
+    const uiAction = [1, 2, {a: 1}];
+
+    const result = tuple(uiAction, 2, 3)
+      .case([1, 2, {a: 1}], 3, 3)((a, b, c) => {return 1})
+      .case([1, 2, {a: 1}], 2, 3)((a, b, c) => {return 1})
+      .match();
+    expect(result).toBe(1);
+
+    const result2 = tuple({a:1})
+      .case({a: 2})((a) => {return a.a})
+      .case({a: 1})((a) => {return a.a})
+      .match();
+    expect(result2).toBe(1);
+
+    const result3 = tuple({a:1})
+      .case(placeholder)((a) => {return a.a})
+      .match();
+    expect(result3).toBe(1);
+  });
+  test('early exit if the condition has met', () => {
+    let executed = false;
+
+    const result = tuple<[number, number, number]>(1, 2, 3)
+      .case(1, 2, 3)((a, b, c) => {return 1})
+      .case(1, 2, 3)((a, b, c) => {executed = true; return 1})
+      .match();
+    expect(executed).toBe(false);
   });
   test('with arrays', () => {
     const uiAction = [1, 2, {a: 1}];

@@ -28,6 +28,24 @@ pattern<Action>(uiAction)
   .match() // 1
 ```
 
+### With tuples
+
+Looks like this must be the default interface, but typescript does not support mapped tuple types
+yet as far as I understand, I am not sure if I implement it correctly.
+
+In future, `tuple` function could be renamed as `pattern`.
+
+```typescript
+test('early exit if the condition has met', () => {
+  let executed = false;
+  tuple<[number, number, number]>(1, 2, 3)
+    .case(1, 2, 3)((a, b, c) => {return 1})
+    .case(1, 2, 3)((a, b, c) => {executed = true; return 1})
+    .match();
+  expect(executed).toBe(false);
+});
+```
+
 ### Fall-through
 
 The second argument of `case` method is optional. In case if it's not given, the handler of next matched case statement will be evaluated.
