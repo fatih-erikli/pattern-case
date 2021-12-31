@@ -1,4 +1,4 @@
-import { pattern, placeholder, predicate, tuple } from '../pattern-case';
+import { pattern, placeholder, predicate, tuple, next } from '../pattern-case';
 
 describe('pattern matching', () => {
   test(('pattern matching with objects in lists'), () => {
@@ -72,6 +72,13 @@ describe('pattern matching', () => {
       .case(1, 2, 3)((a, b, c) => {executed = true; return 1})
       .match();
     expect(executed).toBe(false);
+  });
+  test('fall-through if the callback is not provided', () => {
+    const result = tuple<[number, number, number]>(1, 2, 3)
+      .case(1, 2, 3)(next)
+      .case(1, 2, 3)((a, b, c) => {return 1})
+      .match();
+    expect(result).toBe(1);
   });
   test('with arrays', () => {
     const uiAction = [1, 2, {a: 1}];

@@ -10,6 +10,13 @@ export class NoMatchingPattern extends Error {
 }
 
 export const PlaceholderSymbol = Symbol("Placeholder");
+export const NextSymbol = Symbol("next");
+export type NextStatement = {
+  [NextSymbol]: true,
+};
+export const next: NextStatement = {
+  [NextSymbol]: true,
+};
 
 export type Placeholder = {
   [PlaceholderSymbol]: true;
@@ -48,8 +55,12 @@ export const tuple = <S extends any[]>(...args: S) => {
   let patternFunction: any = pattern(args);
   const statement = {
     case: (...patternArgs: S | WrappedTupple<S>) =>  {
-      return (callback: ((...args: S) => any)) => {
-        patternFunction = patternFunction.case(patternArgs, () => callback(...args));
+      return (callback: NextStatement | ((...args: S) => any)) => {
+        if (NextSymbol in callback) {
+          patternFunction = patternFunction.case(patternArgs);
+        } else {
+          patternFunction = patternFunction.case(patternArgs, () => (callback as CallableFunction)(...args));
+        }
         return statement;
       }
     },
@@ -64,6 +75,7 @@ export const pattern = <S>(value: S) => {
   let matched: boolean;
   let result: any;
   let triedPatterns: Pattern<S>[] = [];
+  let fallThrough = false;
 
   const match = (pattern: any, matchWith: any): boolean => {
     let matches: boolean = false;
@@ -107,13 +119,20 @@ export const pattern = <S>(value: S) => {
 
   const continueNext = {
     case(pattern: Pattern<S>, output: (matched: S) => void): Statement<S> {
-      matched = match(pattern, value);
-
-      if (matched) {
-        result = output(value);
+      if (!fallThrough) {
+        matched = match(pattern, value);
       }
 
       if (matched) {
+        if (!output) {
+          fallThrough = true;
+        } else {
+          result = output(value);
+          fallThrough = false;
+        }
+      }
+
+      if (matched && !fallThrough) {
         return breakNext;
       } else {
         triedPatterns.push(pattern);

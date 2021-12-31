@@ -49,22 +49,17 @@ test('early exit if the condition has met', () => {
 ### Fall-through
 
 <s>The second argument of `case` method is optional. In case if it's not given, the handler of next matched case statement will be evaluated.</s>
-This feature is removed currently, but it looks like I will revert it back. It's useful.
+<s>This feature is removed currently, but it looks like I will revert it back. It's useful.</s>
+I added it back. `next` function could be used as a placeholder to continue with the next statement.
 
 ```typescript
-type Action = {
-  target: string;
-  event: "mousedown" | "mouseup" | "mousemove" | "touchmove";
-  timestamp: number;
-};
-const uiAction = {target: "button-1", "event": "mousedown", "timestamp": 1} as Action;
-
-pattern<Action>(uiAction)
-  .case({target: "button-2", "event": "mousedown", timestamp: placeholder})
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder})
-  .case({target: "button-1", "event": "test", timestamp: placeholder})
-  .case({target: "button-1", "event": "mousedown", timestamp: placeholder}, ({ timestamp }) => timestamp)
-  .match() // 1
+test('fall-through if the callback is not provided', () => {
+    const result = tuple<[number, number, number]>(1, 2, 3)
+      .case(1, 2, 3)(next)
+      .case(1, 2, 3)((a, b, c) => {return 1})
+      .match();
+    expect(result).toBe(1);
+  });
 ```
 
 ### Comparison with ts-pattern
