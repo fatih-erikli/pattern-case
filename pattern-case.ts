@@ -91,7 +91,15 @@ export const pattern = <S>(value: S) => {
               matches = true;
               break;
             }
+          } else {
+            if (Array.isArray(pattern) || Array.isArray(matchWith)) {
+              if (pattern.length !== matchWith.length) {
+                matches = false;
+                break;
+              }
+            }
           }
+
           for (const key in pattern) {
             if (!Object.prototype.hasOwnProperty.call(pattern, key)) { continue; }
             const element = pattern[key];

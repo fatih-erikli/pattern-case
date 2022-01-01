@@ -100,6 +100,15 @@ describe('pattern matching', () => {
       .match();
     expect(result).toBe("ok");
   });
+  test('arrays in objects', () => {
+    const uiAction = {array: [1, 2], empty: [1]};
+
+    const result = pattern(uiAction)
+      .case({empty: []}, () => "ok")
+      .case({empty: [1]}, () => "nok")
+      .match();
+    expect(result).toBe("nok");
+  });
   test('null case', () => {
     type Action = 3 | 4 | null;
     const uiAction = 4;
