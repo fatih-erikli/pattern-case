@@ -76,6 +76,7 @@ describe('pattern matching', () => {
   test('fall-through if the callback is not provided', () => {
     const result = tuple<[number, number, number]>(1, 2, 3)
       .case(1, 2, 3)(next)
+      .case(1, 2, 2)(next)
       .case(1, 2, 3)((a, b, c) => {return 1})
       .match();
     expect(result).toBe(1);
@@ -90,6 +91,14 @@ describe('pattern matching', () => {
       .case([1, 2, {a: 1}], (numbers) => numbers[1])
       .match();
     expect(result).toBe(2);
+  });
+  test('empty array match', () => {
+    const uiAction = {array: [1, 2], empty: []};
+
+    const result = pattern(uiAction)
+      .case({empty: []}, () => "ok")
+      .match();
+    expect(result).toBe("ok");
   });
   test('null case', () => {
     type Action = 3 | 4 | null;

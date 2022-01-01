@@ -78,7 +78,7 @@ export const pattern = <S>(value: S) => {
   let fallThrough = false;
 
   const match = (pattern: any, matchWith: any): boolean => {
-    let matches: boolean = false;
+    let matches: boolean = true;
     switch (pattern) {
       case undefined:
       case null:

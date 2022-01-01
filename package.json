@@ -1,6 +1,6 @@
 {
   "name": "pattern-case",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Simple and efficient pattern matching in Typescript.",
   "main": "dist/pattern-case.js",
   "types": "dist/pattern-case.d.ts",
