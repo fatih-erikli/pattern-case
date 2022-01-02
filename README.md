@@ -5,6 +5,19 @@
 Fast and efficient pattern matching in Typescript.
 
 ```typescript
+pattern<[number, number]>(1, 2)
+.case(1, 2)(() => {})
+.case("2", 3)(() => {}) // typescript throws compile error
+.match();
+
+pattern<[number, number]>(1, 2)
+.case(2, 3)(() => {})
+.match(); // pattern-case throws runtime error
+```
+
+### Examples from the test cases
+
+```typescript
 test('early exit if the condition has met', () => {
   let executed = false;
   pattern<[number, number, number]>(1, 2, 3)
@@ -14,8 +27,6 @@ test('early exit if the condition has met', () => {
   expect(executed).toBe(false);
 });
 ```
-
-### Fall-through
 
 The function `next` could be used as a placeholder to continue with the next statement.
 
