@@ -51,8 +51,8 @@ export type Statement<S> = {
 export type WrappedTupple<T> =  { [K in keyof T]: T[K] | Placeholder | Pattern<T[K]> }
 // https://github.com/Microsoft/TypeScript/issues/25947
 
-export const tuple = <S extends any[]>(...args: S) => {
-  let patternFunction: any = pattern(args);
+export const pattern = <S extends any[]>(...args: S) => {
+  let patternFunction: any = object(args);
   const statement = {
     case: (...patternArgs: S | WrappedTupple<S>) =>  {
       return (callback: NextStatement | ((...args: S) => any)) => {
@@ -71,7 +71,7 @@ export const tuple = <S extends any[]>(...args: S) => {
   return statement;
 };
 
-export const pattern = <S>(value: S) => {
+export const object = <S>(value: S) => {
   let matched: boolean;
   let result: any;
   let triedPatterns: Pattern<S>[] = [];
